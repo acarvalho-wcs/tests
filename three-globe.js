@@ -6,6 +6,7 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {latLngTo3DArray,buildSegmentPositions} from './segment-builder.js';
 import {createFrontLineMaterial,createBackLineMaterial,updateLineMaterialUniforms} from './line-materials.js';
 const CAMERA={FOV:60,NEAR:0.01,FAR:1500,MIN_DISTANCE:1.02,MAX_DISTANCE:2.44,INITIAL_DISTANCE:2.2,AUTO_ROTATE_SPEED:0.15,DAMPING_FACTOR:0.08,PAN_SPEED:0.5,ROTATE_SPEED:0.5,ZOOM_SPEED:1};
+const GLOBAL_OPACITY=0.95;
 const GLOBE={RADIUS:1,SEGMENTS_THETA:48,SEGMENTS_PHI:48,LAYER_RADIUS:1.002,DOT_RADIUS:1.008};
 const UP='https://raw.githubusercontent.com/ancientnerds/AncientMap/7e4bee2d9fbffa11ca31706f0fb2b94bc4635dbe/public/data/layers/globe/';
 export function createGlobe(container,{onChange=()=>{},onPick=()=>{},onError=()=>{},decorative=false}={}){
@@ -14,7 +15,7 @@ export function createGlobe(container,{onChange=()=>{},onPick=()=>{},onError=()=
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x000000);
  const camera=new THREE.PerspectiveCamera(CAMERA.FOV,1,CAMERA.NEAR,CAMERA.FAR);
  scene.add(camera);camera.position.fromArray(latLngTo3DArray(51,10,CAMERA.MAX_DISTANCE));camera.lookAt(0,0,0);
- const globe=new THREE.Mesh(new THREE.SphereGeometry(GLOBE.RADIUS,GLOBE.SEGMENTS_THETA,GLOBE.SEGMENTS_PHI),new THREE.MeshBasicMaterial({color:0x0a1628,transparent:true,opacity:0.8,depthWrite:false}));
+ const globe=new THREE.Mesh(new THREE.SphereGeometry(GLOBE.RADIUS,GLOBE.SEGMENTS_THETA,GLOBE.SEGMENTS_PHI),new THREE.MeshBasicMaterial({color:0x0a1628,transparent:true,opacity:GLOBAL_OPACITY,depthWrite:false}));
  globe.renderOrder=0;scene.add(globe);
    const starCount = 2000
   const starPositions = new Float32Array(starCount * 3)
@@ -135,7 +136,7 @@ export function createGlobe(container,{onChange=()=>{},onPick=()=>{},onError=()=
  function pick(e){if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>5||!features.length)return;const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);const n=camera.position.clone().normalize(),h=1/camera.position.length();const hit=ray.intersectObject(points).find(x=>{const a=points.geometry.attributes.position;return new THREE.Vector3().fromBufferAttribute(a,x.index).normalize().dot(n)>=h});if(hit)onPick(features[hit.index]);}
  renderer.domElement.addEventListener('pointerdown',e=>{down=[e.clientX,e.clientY];if(!decorative)setSpinning(false)});renderer.domElement.addEventListener('pointerup',pick);
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();onError(Error('WebGL context lost. Reload the globe.'))});
- async function addLayer(key,filename){const res=await fetch(UP+filename);if(!res.ok)throw Error('Original '+key+' layer unavailable: '+res.status);const data=await res.json();if(data.type!=='FeatureCollection'||!Array.isArray(data.features))throw Error('Invalid original '+key+' layer');const arrays=buildSegmentPositions(data.features,[1.002,1.001]);const group=new THREE.Group();for(let i=0;i<2;i++){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(arrays[i],3));g.boundingSphere=new THREE.Sphere(new THREE.Vector3(),1.002);const m=i===0?createFrontLineMaterial(0x00e0d0,1):createBackLineMaterial(0x00e0d0,1);materials.push(m);const l=new THREE.LineSegments(g,m);l.renderOrder=i===0?10:-10;group.add(l)}globe.add(group);layers.set(key,group);return group;}
+ async function addLayer(key,filename){const res=await fetch(UP+filename);if(!res.ok)throw Error('Original '+key+' layer unavailable: '+res.status);const data=await res.json();if(data.type!=='FeatureCollection'||!Array.isArray(data.features))throw Error('Invalid original '+key+' layer');const arrays=buildSegmentPositions(data.features,[1.002,1.001]);const group=new THREE.Group();for(let i=0;i<2;i++){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(arrays[i],3));g.boundingSphere=new THREE.Sphere(new THREE.Vector3(),1.002);const m=i===0?createFrontLineMaterial(0x00e0d0,GLOBAL_OPACITY):createBackLineMaterial(0x00e0d0,GLOBAL_OPACITY);materials.push(m);const l=new THREE.LineSegments(g,m);l.renderOrder=i===0?10:-10;group.add(l)}globe.add(group);layers.set(key,group);return group;}
  const readyPromise=Promise.all([addLayer('coastlines','coast_start.0dce00e6.json'),addLayer('countryBorders','borders_start.787780e8.json')]).then(()=>{ready=true;return true}).catch(e=>{onError(e);throw e});
  function frame(now){if(disposed)return;requestAnimationFrame(frame);if(document.hidden){last=now;return}const dt=Math.min((now-(last||now))/1000,.05);last=now;if(spinning)camera.position.applyAxisAngle(new THREE.Vector3(0,1,0),.01*dt);controls.update();const dist=camera.position.length();updateLineMaterialUniforms(materials,camera.position,dist,Math.max(0,Math.min(1,(2.0-dist)/.7)));starMaterial.uniforms.uCameraDist.value=dist;pointMat.uniforms.uCameraPos.value.copy(camera.position);pointMat.uniforms.uCameraDist.value=dist;renderer.render(scene,camera);report();}
  requestAnimationFrame(frame);
