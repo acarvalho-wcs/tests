@@ -49,6 +49,11 @@ def meta():
 @app.get("/api/sites")
 def sites(q:str=Query("",max_length=300),country:str="",category:str="",source:str="",from_:int|None=Query(None,alias="from"),to:int|None=None,limit:int=Query(50,ge=1,le=100),offset:int=Query(0,ge=0,le=1000000)):
     return search(q,country,category,source,from_,to,limit,offset)
+@app.get("/api/globe-points")
+def globe_points(q:str=Query("",max_length=300),country:str="",category:str="",source:str="",from_:int|None=Query(None,alias="from"),to:int|None=None):
+    w,a=filters(q,country,category,source,from_,to)
+    rows=query("SELECT id, ST_X(geom) AS lon, ST_Y(geom) AS lat FROM sites WHERE "+w+" ORDER BY id",a)
+    return {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[r["lon"],r["lat"]]},"properties":{"id":r["id"]}} for r in rows]}
 @app.get("/api/sites/{id}")
 def site(id:str):
     rows=query("SELECT "+COLS+" FROM sites WHERE public AND id=%s",[id])
@@ -93,5 +98,5 @@ def config():
     return Response(s,media_type="text/javascript")
 @app.get("/{filename}")
 def public_file(filename:str):
-    if filename not in {"index.html","globe.html","style.css","app.js","landing.js"}: raise HTTPException(404)
+    if filename not in {"index.html","globe.html","style.css","app.js","landing.js","three-globe.js","line-materials.js","segment-builder.js","LICENSE","UPSTREAM.md"}: raise HTTPException(404)
     return FileResponse(ROOT/filename)

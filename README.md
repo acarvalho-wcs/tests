@@ -1,6 +1,6 @@
 # ARCHA — Research Platform
 
-Independent implementation inspired by the visual and interaction design of [Ancient Nerds](https://ancientnerds.com/globe.html). Reference architecture: [AncientMap](https://github.com/ancientnerds/AncientMap). No upstream code, branding assets, data, API credentials or records are bundled. Archa uses original implementation code and MapLibre instead of the original Three.js/Mapbox stack. Map tiles retain their providers' attribution and are subject to their terms.
+Globe rendering adapted from [Ancient Nerds / AncientMap](https://github.com/ancientnerds/AncientMap/tree/7e4bee2d9fbffa11ca31706f0fb2b94bc4635dbe) (AGPL-3.0-or-later). See [UPSTREAM.md](UPSTREAM.md) and [LICENSE](LICENSE). The application uses the upstream Three.js version, original perspective camera, unit sphere, star shader, vector line shaders and coordinate conversion. Native sphere only; the upstream close-zoom Mapbox mode, label pipeline, satellite and historical layers are not enabled. OrbitControls handles dragging (the custom upstream arcball was not ported). Original start-tier coastlines and country borders are fetched from the pinned upstream GitHub commit. No archaeological data is imported. Source attribution is visible.
 
 ## Static preview (GitHub Pages)
 
@@ -17,13 +17,13 @@ docker compose up --build -d
 docker compose exec web python import_data.py
 ````
 
-Open http://localhost:8000. Database mode is auto-configured by the backend. API docs: http://localhost:8000/docs. The API supports full-text substring search, country/type/source/year filtering, paginated results and spatial vector tiles using PostGIS. Low zoom clusters are generated on the server, and the browser requests only visible tiles. No million-record benchmark has been run. For production add HTTPS, rate limiting, caching and monitoring; confirm map tile service terms and capacity. GitHub Pages cannot host this Python backend or database.
+Open http://localhost:8000. Database mode is auto-configured by the backend. API docs: http://localhost:8000/docs. The API supports full-text substring search, country/type/source/year filtering, paginated results and spatial vector tiles using PostGIS, plus a filtered globe-points endpoint. The tile API remains available, but the native sphere currently loads filtered points as GeoJSON. Large datasets require a paged or binary point stream and benchmarking. No million-record benchmark has been run. For production add HTTPS, rate limiting, caching and monitoring; confirm map tile service terms and capacity. GitHub Pages cannot host this Python backend or database.
 
 For data changes, update data/sites.geojson or data/news.json and run `docker compose up -d --build web` then `docker compose exec web python import_data.py`. For larger deployments use a separate controlled ETL process rather than keeping massive source files in Git. See [data instructions](data/README.md).
 
 ## Scope
 
-Landing page, interactive globe / flat map, dark / satellite basemap, auto rotation, filters, clickable site records, paginated search, news area, and a deterministic research assistant based on matching records. The assistant is not a generative LLM; it makes no unsupported claims. No dataset has been preloaded. UI is English. This is a starter implementation, not a pixel-perfect clone or full replication of AncientMap features. Browser and Docker integration tests are still required.
+Landing page, native interactive 3D globe with coastline and country-border controls, auto rotation, filters, clickable site records, paginated search, news area, and a deterministic research assistant based on matching records. The assistant is not a generative LLM; it makes no unsupported claims. No dataset has been preloaded. UI is English. This is a starter implementation, not a pixel-perfect clone or full replication of AncientMap features. Browser and Docker integration tests are still required. Original globe source was adapted, not transferred as a full application.
 
 ## Publication status
 
