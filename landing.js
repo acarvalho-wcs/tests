@@ -1,0 +1,1 @@
+import {API_BASE,json,dataset,facets} from './config.js';try{const s=API_BASE?await json(API_BASE+'/api/meta'):await facets(await dataset());document.querySelector('#total').textContent=s.total.toLocaleString();document.querySelector('#countries').textContent=s.country.length;document.querySelector('#sources').textContent=s.source.length}catch(e){console.error(e)}

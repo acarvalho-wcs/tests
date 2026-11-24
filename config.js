@@ -1,0 +1,8 @@
+// Empty string = GitHub Pages static mode. For a separate API, set the HTTPS origin here.
+export const API_BASE = '';
+export const empty = {type:'FeatureCollection',features:[]};
+export const norm = s => String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+export async function json(url,options){const r=await fetch(url,options);if(!r.ok)throw Error('HTTP '+r.status);return r.json()}
+export function match(f,p){const x=f.properties;return (!p.q||norm([x.name,x.country,x.category,x.source,x.description].join(' ')).includes(norm(p.q)))&&['country','category','source'].every(k=>!p[k]||x[k]===p[k])&&(!p.from||x.end_year!=null&&x.end_year>=Number(p.from))&&(!p.to||x.start_year!=null&&x.start_year<=Number(p.to))}
+export async function dataset(){const d=await json('./data/sites.geojson');if(d.type!=='FeatureCollection'||!Array.isArray(d.features))throw Error('Invalid data file');return d.features.filter(f=>f.geometry?.type==='Point'&&f.properties?.id&&f.properties?.name&&f.properties?.public===true)}
+export function facets(a){return {total:a.length,...Object.fromEntries(['country','category','source'].map(k=>[k,[...new Set(a.map(f=>f.properties[k]).filter(Boolean))].sort()]))}}
