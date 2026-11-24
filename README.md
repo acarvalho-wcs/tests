@@ -24,3 +24,7 @@ For data changes, update data/sites.geojson or data/news.json and run `docker co
 ## Scope
 
 Landing page, interactive globe / flat map, dark / satellite basemap, auto rotation, filters, clickable site records, paginated search, news area, and a deterministic research assistant based on matching records. The assistant is not a generative LLM; it makes no unsupported claims. No dataset has been preloaded. UI is English. This is a starter implementation, not a pixel-perfect clone or full replication of AncientMap features. Browser and Docker integration tests are still required.
+
+## Publication status
+
+The root includes `.nojekyll` for direct GitHub Pages serving. GitHub Pages must be enabled by a repository administrator before the public URL works. The landing globe is decorative; it degrades to the static background if WebGL or the CDN is unavailable. The explorer reports startup failures rather than silently displaying a blank screen.
