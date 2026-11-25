@@ -15,7 +15,7 @@ export function createGlobe(container,{onChange=()=>{},onPick=()=>{},onError=()=
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x000000);
  const camera=new THREE.PerspectiveCamera(CAMERA.FOV,1,CAMERA.NEAR,CAMERA.FAR);
  scene.add(camera);camera.position.fromArray(latLngTo3DArray(51,10,CAMERA.MAX_DISTANCE));camera.lookAt(0,0,0);
- const globe=new THREE.Mesh(new THREE.SphereGeometry(GLOBE.RADIUS,GLOBE.SEGMENTS_THETA,GLOBE.SEGMENTS_PHI),new THREE.MeshBasicMaterial({color:0x0a1628,transparent:true,opacity:GLOBAL_OPACITY,depthWrite:false}));
+ const globe=new THREE.Mesh(new THREE.SphereGeometry(GLOBE.RADIUS,GLOBE.SEGMENTS_THETA,GLOBE.SEGMENTS_PHI),new THREE.MeshBasicMaterial({color:0x0a1628,transparent:true,opacity:0.8,depthWrite:false}));
  globe.renderOrder=0;scene.add(globe);
    const starCount = 2000
   const starPositions = new Float32Array(starCount * 3)
