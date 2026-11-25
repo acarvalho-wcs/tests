@@ -98,5 +98,5 @@ def config():
     return Response(s,media_type="text/javascript")
 @app.get("/{filename}")
 def public_file(filename:str):
-    if filename not in {"index.html","globe.html","style.css","app.js","landing.js","three-globe.js","line-materials.js","segment-builder.js","LICENSE","UPSTREAM.md"}: raise HTTPException(404)
+    if filename not in {"index.html","globe.html","style.css","app.js","landing.js","three-globe.js","line-materials.js","segment-builder.js","wildlife-data.js","LICENSE","UPSTREAM.md"}: raise HTTPException(404)
     return FileResponse(ROOT/filename)

@@ -28,3 +28,7 @@ Landing page, native interactive 3D globe with coastline and country-border cont
 ## Publication status
 
 The root includes `.nojekyll` for direct GitHub Pages serving. GitHub Pages must be enabled by a repository administrator before the public URL works. The landing globe is decorative; it degrades to the static background if WebGL or the CDN is unavailable. The explorer reports startup failures rather than silently displaying a blank screen.
+
+## Wildlife trafficking experiment
+
+The public frontend currently reads the two canonical public JSON feeds directly from the pinned Observatory commit 583ac03918994a214cdf10eaa4ab67e284602da2. The original archaeological GeoJSON and PostGIS tables are unchanged. Filters use event/publication date independently, country, fauna group, transport modal, source, text and documented-route presence. The counts exclude records flagged exclude_from_totals while all matching public records remain selectable. Routes require unique case matching across the complete unfiltered collection, documented status, valid endpoints and no exclusions; unknown directions are not inferred. Gray lines are schematic, blue arrowheads show documented directions and hollow blue rings mark approximate references. The experiment is read-only and does not access the restricted area. The static frontend does not import this experiment into PostGIS. The external feed is pinned for consistent cases/routes; update SOURCE_COMMIT to refresh both together. Browser and complete-feed validation remain pending.

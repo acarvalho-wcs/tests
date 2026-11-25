@@ -5,3 +5,5 @@
 
 /* Keep the globe unobstructed; no additional options panel. */
 .explorer .error{width:max-content;max-width:min(360px,calc(100% - 24px));max-height:84px;overflow:auto;overflow-wrap:anywhere;font-size:11px;padding:8px 10px;bottom:24px}.explorer .error button{padding:3px 6px;font-size:10px}.explorer #filters{max-width:calc(100% - 80px)}
+
+#filterBody .check-row{display:flex;gap:7px;align-items:center;letter-spacing:0;margin:9px 0}#filterBody .check-row input{width:auto;accent-color:var(--cyan)}#filterBody .split input[type=date]{min-width:0;width:50%;font-size:10px;padding:5px 3px}#routeCount{line-height:1.6;margin-top:5px}.drawer p{white-space:pre-wrap}
